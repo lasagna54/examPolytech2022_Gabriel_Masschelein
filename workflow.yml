@@ -1,0 +1,24 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the mysql server 
+      run: docker build . --file Dockerfile --tag mysql:$(date +%s)
+
+    - name: Build the back-end server
+      run: docker build ./java --file Dockerfile --tag exam_docker_java:0.1(date +%s)
+    
+    - name: Build the front-end server
+      run: docker build ./angular --file Dockerfile --tag exam_front:0.1$(date +%s)

@@ -1,0 +1,62 @@
+volumes:
+  examDocker:
+
+networks:
+  examDocker:
+
+services:
+  mysql:
+    image: mysql:8-oracle
+    volumes:
+    - examDocker:/var/lib/mysql
+    networks:
+      examDocker:
+        aliases:
+        - examsql
+    environment:
+      - MYSQL_USER=myUser
+      - MYSQL_PASSWORD=myPassword
+      - MYSQL_ROOT_PASSWORD=myRootPassword
+      - MYSQL_DATABASE=superheroes
+    healthcheck:
+      test: ["CMD", 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 5s
+      timeout: 15s
+      retries: 3
+  back:
+    image: exam_docker_java:0.1
+    build: ./java
+    networks:
+      examDocker:
+        aliases:
+        - examjava
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://examsql:3306/superheroes
+      - SPRING_DATASOURCE_USERNAME=myUser
+      - SPRING_DATASOURCE_PASSWORD=myPassword
+    ports:
+    - 8448:8448
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "localhost:8448/test"]
+      interval: 25s
+      timeout: 5s
+      retries: 2
+    
+  frontend:
+    image: exam_front
+    build: ./angular
+    networks:
+      examDocker:
+        aliases:
+          - exam_front
+    environment:
+      - BACKEND_URL_ENV_VAR=http://localhost:8448
+    ports:
+    - 8002:80    #8002 car j'ai un serveur apache qui tourne je sais pas ou, oups (enfin si sur le pc mais bon)
+    depends_on:
+      back:
+        condition: service_healthy
+

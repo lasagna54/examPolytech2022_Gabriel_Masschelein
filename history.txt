@@ -1,0 +1,12 @@
+
+ 1712  nautilus .
+ 1713  ls
+ 1714  cd ..
+ 1715  ls
+ 1716  sudo docker compose up
+ 1717  sudo docker compose down
+ 1718  sudo docker compose down --volumes
+ 1719  sudo docker compose up
+ 1720  git clone https://github.com/vbenji/examPolytech2022.git
+ 1721  history > history.txt
+
